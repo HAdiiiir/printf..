@@ -21,7 +21,7 @@ int print_bin(va_list val)
 		if (flag)
 		{
 			b = p >> (31 - i);
-			_putchar(b + 48);
+			putchar(b + 48);
 			cont++;
 		}
 	}
