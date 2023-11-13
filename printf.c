@@ -1,88 +1,59 @@
 #include "main.h"
-#include <stdlib.h>
 
 /**
- * itoa - Converts an integer to a string
- * @val: Integer to convert
- * @base: Number base for conversion
+ * _printf - print output to stdout according to a format string
+ * @format: the format of the string to print
  *
- * Return: Pointer to the converted string
- */
-char *itoa(int val, int base)
-{
-static char buf[32] = {0};
-int i = 30;
-
-for (; val && i; --i, val /= base)
-buf[i] = "0123456789abcdef"[val % base];
-
-return (&buf[i + 1]);
-}
-
-
-/**
- * _printf - Custom printf function to format and print data
- * @format: format string containing the directives
+ * Description: This program emulates some of the functionality of the standard
+ * printf function. It does not handle precision, field width, or any of the
+ * flags. It does handle all of the format specifiers except "%f" plus some
+ * special format specifiers: "%b" prints a number in binary, "%R" encodes a
+ * string in ROT13, and "%r" prints a string in reverse. %F is just a little
+ * joke that allows you to print an expletive regardless of what you pass the
+ * function `print_F`
  *
- * Return: Number of characters printed
+ * Return: number of characters printed (excluding null byte)
  */
+
 int _printf(const char *format, ...)
 {
-va_list args;
-int count = 0;
-char ch;
-char *str;
-int val;
+	int count = 0;
+	va_list args;
+	int (*function)(va_list) = NULL;
 
-va_start(args, format);
+	va_start(args, format);
 
-while (*format)
-{
-if (*format == '%')
-{
-format++;
-switch (*format)
-{
-case 'c':
-ch = (char)va_arg(args, int);
-putchar(ch);
-count++;
-break;
-case 's':
-str = va_arg(args, char *);
-while (*str)
-{
-putchar(*str);
-str++;
-count++;
-}
-break;
-case 'd':
-case 'i':
-val = va_arg(args, int);
-str = itoa(val, 10);
-while (*str)
-{
-putchar(*str);
-str++;
-count++;
-}
-break;
-case '%':
-putchar('%');
-count++;
-break;
-}
-}
-else
-{
-putchar(*format);
-count++;
-}
-format++;
-}
+	while (*format)
+	{
+		if (*format == '%' && *(format + 1) != '%')
+		{
+			format++;
+			function = get_function(format);
+			if (*(format) == '\0')
+				return (-1);
+			else if (function == NULL)
+			{
+				_putchar(*(format - 1));
+				_putchar(*format);
+				count += 2;
+			}
+			else
+				count += function(args);
+		}
+		else if (*format == '%' && *(format + 1) == '%')
+		{
+			format++;
+			_putchar('%');
+			count++;
+		}
+		else
+		{
+			_putchar(*format);
+			count++;
+		}
 
-va_end(args);
-
-return (count);
+		format++;
+	}
+	va_end(args);
+	return (count);
 }
