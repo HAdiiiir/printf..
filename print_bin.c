@@ -1,42 +1,34 @@
-#include <stdarg.h>
-#include <stdio.h>
 #include "main.h"
-/**
-* print_bin - convert to binary
-* @b: number in decinal
-* Return: number of chars printed
-*/
-int print_bin(va_list b)
-{
-	unsigned int len, powten, j, digit, n, num;
-	int count = 0;
 
-	n = va_arg(b, unsigned int);
-	if (n != 0)
+/**
+ * print_bin - prints binary number.
+ * @val: parameter.
+ * Return: integer
+ */
+int print_bin(va_list val)
+{
+	int flag = 0;
+	int cont = 0;
+	int i, a = 1, b;
+	unsigned int num = va_arg(val, unsigned int);
+	unsigned int p;
+
+	for (i = 0; i < 32; i++)
 	{
-		num = n;
-		len = 0;
-		while (num != 0)
+		p = ((a << (31 - i)) & num);
+		if (p >> (31 - i))
+			flag = 1;
+		if (flag)
 		{
-			num /= 2;
-			len++;
-		}
-		powten = 1;
-		for (j = 1; j <= len - 1; j++)
-			powten *= 2;
-		for (j = 1; j <= len; j++)
-		{
-			digit = n / powten;
-			putchar(digit + '0');
-			count++;
-			n -= digit * powten;
-			powten /= 2;
+			b = p >> (31 - i);
+			_putchar(b + 48);
+			cont++;
 		}
 	}
-	else
+	if (cont == 0)
 	{
-		putchar('0');
-		return (1);
+		cont++;
+		_putchar('0');
 	}
-	return (count);
+	return (cont);
 }
